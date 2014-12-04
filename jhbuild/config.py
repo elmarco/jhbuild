@@ -418,6 +418,8 @@ class Config:
         if (hasattr(options, 'check_sysdeps') and
             options.check_sysdeps is not None):
             self.check_sysdeps = options.check_sysdeps
+        if hasattr(options, 'help_all') and options.help_all:
+            self.help_all = True
 
     def __setattr__(self, k, v):
         '''Override __setattr__ for additional checks on some options.'''

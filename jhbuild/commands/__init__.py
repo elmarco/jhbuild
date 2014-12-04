@@ -28,6 +28,7 @@ import optparse
 import sys
 
 from jhbuild.errors import UsageError, FatalError
+from optparse import make_option
 
 
 class OptionParser(optparse.OptionParser):
@@ -42,6 +43,7 @@ class Command:
 
     doc = ''
     name = None
+    hide = False
     usage_args = N_('[ options ... ]')
 
     def __init__(self, options=[]):
@@ -117,8 +119,10 @@ class BuildCommand(Command):
             print _('    (none)')
 
 
-def print_help():
+def print_help(options=None):
     import os
+
+    help_all = options and options.help_all
     thisdir = os.path.abspath(os.path.dirname(__file__))
 
     # import all available commands
@@ -132,7 +136,8 @@ def print_help():
             pass
 
     uprint(_('JHBuild commands are:'))
-    commands = [(x.name, x.doc) for x in get_commands().values()]
+    commands = [(x.name, x.doc) for x in get_commands().values()
+                if help_all or not x.hide]
     commands.sort()
     for name, description in commands:
         uprint('  %-15s %s' % (name, description))
@@ -149,11 +154,17 @@ class cmd_help(Command):
     doc = N_('Information about available JHBuild commands')
 
     name = 'help'
-    usage_args = ''
+
+    def __init__(self):
+        Command.__init__(self, [
+            make_option('-a', '--all',
+                        action='store_true', dest='help_all', default=False,
+                        help=_('display all commands'))
+            ])
 
     def run(self, config, options, args, help=None):
         if help:
-            return help()
+            return help(options=options)
 
 register_command(cmd_help)
 

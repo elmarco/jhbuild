@@ -82,10 +82,10 @@ class LoggingFormatter(logging.Formatter):
         record.level_name_initial = record.levelname[0]
         return logging.Formatter.format(self, record)
 
-def print_help(parser):
+def print_help(parser, **kwargs):
     parser.print_help()
     print
-    jhbuild.commands.print_help()
+    jhbuild.commands.print_help(**kwargs)
     parser.exit()
 
 def main(args):
@@ -110,7 +110,7 @@ def main(args):
 
     parser.add_option('-h', '--help', action='callback',
                       callback=lambda *args: print_help(parser),
-                      help=_("Display this help and exit"))
+                      help=optparse.SUPPRESS_HELP)
     parser.add_option('--help-commands', action='callback',
                       callback=lambda *args: print_help(parser),
                       help=optparse.SUPPRESS_HELP)
@@ -126,7 +126,7 @@ def main(args):
                       help=_('do not prompt for input'))
     parser.add_option('--conditions', action='append',
                       dest='conditions', default=[],
-                      help=_('modify the condition set'))
+                      help=optparse.SUPPRESS_HELP)
 
     options, args = parser.parse_args(args)
 
@@ -148,7 +148,8 @@ def main(args):
     warn_local_modulesets(config)
 
     try:
-        rc = jhbuild.commands.run(command, config, args, help=lambda: print_help(parser))
+        rc = jhbuild.commands.run(command, config, args,
+                                  help=lambda **kwargs: print_help(parser, **kwargs))
     except UsageError, exc:
         sys.stderr.write('jhbuild %s: %s\n' % (command, exc.args[0].encode(_encoding, 'replace')))
         parser.print_usage()
