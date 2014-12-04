@@ -77,7 +77,7 @@ class sxml:
                 return ('<%s%s>%s</%s>'
                         % (attr,
                            ''.join([' %s="%s"' % (_trans(k), quote(v))
-                                    for k, v in kw.items()]),
+                                    for k, v in kw.items() if v ]),
                            '\n'.join(args),
                            attr))
             render.__name__ = attr
