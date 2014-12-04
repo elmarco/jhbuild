@@ -492,6 +492,7 @@ class cmd_dot(Command):
 
     name = 'dot'
     usage_args = N_('[ modules ... ]')
+    hide = True
 
     def __init__(self):
         Command.__init__(self, [

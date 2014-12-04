@@ -69,6 +69,7 @@ div#footer {
 class cmd_extdeps(Command):
     doc = _('Report details on GNOME external dependencies')
     name = 'extdeps'
+    hide = True
 
     def __init__(self):
         Command.__init__(self, [

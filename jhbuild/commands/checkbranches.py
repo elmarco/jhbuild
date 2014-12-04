@@ -27,7 +27,8 @@ from jhbuild.errors import CommandError
 class cmd_checkbranches(Command):
     doc = N_('Check modules in GNOME Git repository have the correct branch definition')
     name = 'checkbranches'
-    
+    hide = True
+
     def __init__(self):
         Command.__init__(self, [
             make_option('-b', '--branch', metavar = 'BRANCH',

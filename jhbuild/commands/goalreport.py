@@ -327,6 +327,7 @@ class DeprecatedSymbolsCheck(SymbolsCheck):
 class cmd_goalreport(Command):
     doc = _('Report GNOME modules status wrt various goals')
     name = 'goalreport'
+    hide = True
 
     checks = None
     page_intro = None

@@ -33,7 +33,8 @@ from jhbuild.utils.sxml import sxml, sxml_to_string
 class cmd_snapshot(Command):
     doc = N_('Print out a moduleset for the exact versions that are checked out')
     name = 'snapshot'
-    
+    hide = True
+
     def __init__(self):
         Command.__init__(self)
 

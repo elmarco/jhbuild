@@ -28,6 +28,7 @@ class cmd_autobuild(Command):
     doc = N_('Build modules non-interactively and upload results to JhAutobuild')
 
     name = 'autobuild'
+    hide = True
 
     def __init__(self):
         Command.__init__(self, [

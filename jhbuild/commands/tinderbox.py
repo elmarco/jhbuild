@@ -30,6 +30,7 @@ class cmd_tinderbox(BuildCommand):
 
     name = 'tinderbox'
     usage_args = N_('[ options ... ] [ modules ... ]')
+    hide = True
 
     def __init__(self):
         Command.__init__(self, [

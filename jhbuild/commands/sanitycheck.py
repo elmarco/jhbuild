@@ -47,6 +47,7 @@ class cmd_sanitycheck(Command):
 
     name = 'sanitycheck'
     usage_args = ''
+    hide = True
 
     def run(self, config, options, args, help=None):
         if args:

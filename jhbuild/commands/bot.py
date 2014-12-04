@@ -55,6 +55,7 @@ class cmd_bot(Command):
 
     name = 'bot'
     usage_args = N_('[ options ... ]')
+    hide = True
 
     def __init__(self):
         Command.__init__(self, [
