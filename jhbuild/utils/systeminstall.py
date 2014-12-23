@@ -38,17 +38,33 @@ def get_installed_pkgconfigs(config):
         for line in StringIO(stdout):
             pkg, rest = line.split(None, 1)
             pkgs.append(pkg)
-        # We have to rather inefficiently repeatedly fork to work around
-        # broken pkg-config installations - if any package has a missing
-        # dependency pkg-config will fail entirely.
-        for pkg in pkgs:
+        if len(pkgs) == 0:
+            return pkgversions
+
+        try:
             args = ['pkg-config', '--modversion']
-            args.append(pkg)
-            proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                    close_fds=True, env=config.get_original_environment())
+            args.extend(pkgs)
+            proc = subprocess.Popen(args, stdout=subprocess.PIPE, env=config.get_original_environment(), close_fds=True)
             stdout = proc.communicate()[0]
             proc.wait()
-            pkgversions[pkg] = stdout.strip()
+            for pkg,verline in zip(pkgs, StringIO(stdout)):
+                pkgversions[pkg] = verline.strip()
+        except OSError:
+            pass
+
+        if len(pkgversions) == 0:
+            # We have to rather inefficiently repeatedly fork to work around
+            # broken pkg-config installations - if any package has a missing
+            # dependency pkg-config will fail entirely.
+            for pkg in pkgs:
+                args = ['pkg-config', '--modversion']
+                args.append(pkg)
+                proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                        close_fds=True, env=config.get_original_environment())
+                stdout = proc.communicate()[0]
+                proc.wait()
+                pkgversions[pkg] = stdout.strip()
+
     except OSError: # pkg-config not installed
         pass
     return pkgversions
