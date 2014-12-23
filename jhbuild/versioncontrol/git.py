@@ -477,6 +477,19 @@ class GitBranch(Branch):
             id_suffix = self.dirty_branch_suffix
         return output.strip() + id_suffix
 
+    def list_files(self):
+        popen_args = { 'cwd': self.get_checkoutdir(), 'stdout': subprocess.PIPE }
+        try:
+            p = subprocess.Popen(['git', 'ls-tree', '-r', 'HEAD'], **popen_args)
+            (stdout, stderr) = p.communicate()
+            p.wait()
+            files = [ [i.split("\t")[1], i] for i in stdout.split("\n") if len(i) ]
+            files = [ os.path.join(self.get_checkoutdir(), i[0])
+                     for i in files if i[1].split(" ")[1] == "blob" ]
+            return [ i for i in files if os.path.isfile(i) ]
+        except OSError:
+            return []
+
     def to_sxml(self):
         attrs = {}
         if self.branch:

@@ -26,6 +26,7 @@ __all__ = [
 
 __metaclass__ = type
 
+import subprocess
 from jhbuild.errors import FatalError, BuildStateError
 import os
 
@@ -177,6 +178,21 @@ class Branch:
          if os.path.exists(todir):
              self._wipedir(buildscript, self.srcdir)
          buildscript.execute(['cp', '-R', fromdir, todir])
+
+    def list_files(self):
+        """List files"""
+        try:
+            p = subprocess.Popen(['find', self.get_checkoutdir(), '-type', 'f' ],
+                                 stdout=subprocess.PIPE)
+            (stdout, stderr) = p.communicate()
+            p.wait()
+            return filter(None, stdout.split("\n"))
+        except OSError:
+            return []
+
+    def status(self):
+        """Branch files status"""
+        return ""
 
     def to_sxml(self):
         """Return an sxml representation of this checkout."""
