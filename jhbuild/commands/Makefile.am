@@ -15,6 +15,7 @@ app_PYTHON = \
 	grep.py \
 	gui.py \
 	info.py \
+	init.py \
 	make.py \
 	rdepends.py \
 	sanitycheck.py \
