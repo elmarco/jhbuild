@@ -11,6 +11,7 @@ app_PYTHON = \
 	clean.py \
 	extdeps.py \
 	goalreport.py \
+	grep.py \
 	gui.py \
 	info.py \
 	make.py \
