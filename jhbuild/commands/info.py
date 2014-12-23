@@ -19,6 +19,7 @@
 
 import sys
 import time
+import os
 
 import jhbuild.moduleset
 import jhbuild.frontends
@@ -30,7 +31,7 @@ from jhbuild.versioncontrol.svn import SubversionBranch
 from jhbuild.versioncontrol.darcs import DarcsBranch
 from jhbuild.versioncontrol.git import GitBranch
 from jhbuild.versioncontrol.tarball import TarballBranch
-
+from lxml import etree
 
 class cmd_info(Command):
     doc = N_('Display information about one or more modules')
@@ -58,6 +59,16 @@ class cmd_info(Command):
         package_entry = packagedb.get(module.name)
 
         uprint(_('Name:'), module.name)
+        try:
+            source_dir = module.branch.srcdir
+            doap = os.path.join(source_dir, module.name + '.doap')
+            xml = etree.ElementTree(file=doap)
+            shortdesc = xml.xpath('/d:Project/d:shortdesc/text()',
+                                  namespaces={'d': 'http://usefulinc.com/ns/doap#'})[0]
+            uprint(_('Description:'), shortdesc.strip())
+        except (NotImplementedError, AttributeError, IOError):
+            pass
+
         uprint(_('Module Set:'), module.moduleset_name)
         uprint(_('Type:'), module.type)
 
