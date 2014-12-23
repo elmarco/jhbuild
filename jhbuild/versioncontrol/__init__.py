@@ -194,6 +194,10 @@ class Branch:
         """Branch files status"""
         return ""
 
+    def branches(self):
+        """List local branches"""
+        return ""
+
     def to_sxml(self):
         """Return an sxml representation of this checkout."""
         raise NotImplementedError

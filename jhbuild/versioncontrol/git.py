@@ -500,6 +500,19 @@ class GitBranch(Branch):
         except OSError:
             return ""
 
+    def branches(self):
+        branch = self.branch or 'master'
+        popen_args = { 'cwd': self.get_checkoutdir(), 'stdout': subprocess.PIPE }
+        try:
+            p = subprocess.Popen(['git', 'branch', '-vv'], **popen_args)
+            (stdout, stderr) = p.communicate()
+            p.wait()
+            branches = [ line for line in stdout.split('\n')
+                         if not '[origin/%s]' % branch in line ]
+            return "\n".join(branches)
+        except OSError:
+            return ""
+
     def to_sxml(self):
         attrs = {}
         if self.branch:
