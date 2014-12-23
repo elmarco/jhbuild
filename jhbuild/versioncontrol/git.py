@@ -490,6 +490,16 @@ class GitBranch(Branch):
         except OSError:
             return []
 
+    def status(self):
+        popen_args = { 'cwd': self.get_checkoutdir(), 'stdout': subprocess.PIPE }
+        try:
+            p = subprocess.Popen(['git', 'status', '--porcelain'], **popen_args)
+            (stdout, stderr) = p.communicate()
+            p.wait()
+            return stdout
+        except OSError:
+            return ""
+
     def to_sxml(self):
         attrs = {}
         if self.branch:

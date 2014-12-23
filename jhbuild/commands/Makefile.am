@@ -18,6 +18,7 @@ app_PYTHON = \
 	rdepends.py \
 	sanitycheck.py \
 	snapshot.py \
+	status.py \
 	sysdeps.py \
 	tinderbox.py \
 	twoninetynine.py \
