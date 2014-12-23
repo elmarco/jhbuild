@@ -64,7 +64,7 @@ _known_keys = [ 'moduleset', 'modules', 'skip', 'tags', 'prefix',
                 'print_command_pattern', 'static_analyzer',
                 'module_static_analyzer', 'static_analyzer_template',
                 'static_analyzer_outputdir', 'check_sysdeps', 'system_prefix',
-                'help_website', 'conditions', 'extra_prefixes'
+                'help_website', 'conditions', 'extra_prefixes', 'projectdir'
               ]
 
 env_prepends = {}
@@ -112,16 +112,49 @@ def modify_conditions(conditions, conditions_modifiers):
             else:
                 raise FatalError(_("Invalid condition set modifier: '%s'.  Must start with '+' or '-'.") % mod)
 
+
+def walk_up(path, top=None):
+    here = os.path.realpath(path)
+
+    names = os.listdir(here)
+
+    dirs, files = [], []
+    for name in names:
+        if os.path.isdir(os.path.join(here, name)):
+            dirs.append(name)
+        else:
+            files.append(name)
+
+    yield here, dirs, files
+
+    up_path = os.path.realpath(os.path.join(here, '..'))
+    if up_path == here or top == up_path:
+        return
+
+    for x in walk_up(up_path, top):
+        yield x
+
 class Config:
     _orig_environ = None
 
     def __init__(self, filename, conditions_modifiers):
+        projectdir = None
+        for path, dirs, files in walk_up('.'):
+            try:
+                if 'jhbuild' in dirs and \
+                   os.path.isfile(os.path.join(path, "jhbuild", "moduleset")):
+                    projectdir = path
+                    break
+            except:
+                pass
+
         self._config = {
             '__file__': _defaults_file,
             'addpath':  addpath,
             'prependpath':  prependpath,
             'include': self.include,
-            }
+            'projectdir': projectdir,
+        }
 
         if not self._orig_environ:
             self.__dict__['_orig_environ'] = os.environ.copy()
@@ -141,6 +174,9 @@ class Config:
                              ('XDG_CONFIG_HOME',
                               os.path.join(os.path.expanduser('~'), '.config')),
                           'jhbuildrc')
+
+        if projectdir:
+            new_config = os.path.join(projectdir, "jhbuild", "config")
 
         if filename:
             if not os.path.exists(filename):

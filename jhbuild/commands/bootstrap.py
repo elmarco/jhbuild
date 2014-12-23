@@ -19,6 +19,7 @@
 
 from jhbuild.commands import register_command
 from jhbuild.commands.base import cmd_build
+import os
 
 class cmd_bootstrap(cmd_build):
     doc = N_('Build support tools')
@@ -26,6 +27,7 @@ class cmd_bootstrap(cmd_build):
     name = 'bootstrap'
 
     def run(self, config, options, args, help=None):
+        config.modulesets_dir = os.path.join(SRCDIR, 'modulesets')
         config.moduleset = 'bootstrap'
         # load the bootstrap module set
         if not args:

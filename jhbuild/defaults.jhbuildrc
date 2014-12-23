@@ -8,11 +8,21 @@ if 'GTK_PATH' in os.environ.keys():
     del os.environ['GTK_PATH']
 
 # module directory
-modulesets_dir = os.path.join(SRCDIR, 'modulesets')
+if projectdir:
+    modulesets_dir = os.path.join(projectdir, "jhbuild")
+else:
+    modulesets_dir = os.path.join(SRCDIR, 'modulesets')
 
 # what modules to build?
-moduleset = 'gnome-apps-3.16'
-modules = [ 'meta-gnome-core' ]
+if projectdir:
+    moduleset = 'moduleset'
+else:
+    moduleset = 'gnome-apps-3.16'
+
+if projectdir:
+    modules = 'all'
+else:
+    modules = [ 'meta-gnome-core' ]
 
 # policy for modules to build, options are:
 #  - all: build everything requested
@@ -35,7 +45,9 @@ skip = []
 tags = []
 
 # directories
-if os.path.exists('/opt/gnome'):
+if projectdir:
+    prefix = os.path.join(projectdir, "out")
+elif os.path.exists('/opt/gnome'):
     # /opt/gnome has been the default for a long time, and we keep on using it
     # if it exists
     prefix = '/opt/gnome'
@@ -44,14 +56,23 @@ else:
 
 top_builddir = '_jhbuild'  # If a relative path, prefix will be prepended
 
-if os.path.exists(os.path.expanduser('~/checkout/gnome')):
+if projectdir:
+    checkoutroot = os.path.join(projectdir, "checkout")
+elif os.path.exists(os.path.expanduser('~/checkout/gnome')):
     checkoutroot = '~/checkout/gnome/'
 else:
     checkoutroot = '~/jhbuild/checkout/'
 
-tarballdir = '~/jhbuild/downloads/'
+if projectdir:
+    tarballdir = os.path.join(projectdir, ".tarballs")
+else:
+    tarballdir = '~/jhbuild/downloads/'
 
-buildroot = None     # if set, packages will be built with srcdir!=builddir
+# if set, packages will be built with srcdir!=builddir
+if projectdir:
+    buildroot = os.path.join(projectdir, "build")
+else:
+    buildroot = None
 
 # When using srcdir!=builddir builds, this key allows you to use a
 # different builddir name.  Some people like this because it reduces
@@ -212,7 +233,10 @@ jhbuildbot_dir = None
 jhbuildbot_mastercfg = "master.cfg"
 
 # whether to use a local copy of modulesets (instead of fetching them from svn)
-use_local_modulesets = False
+if projectdir:
+    use_local_modulesets = True
+else:
+    use_local_modulesets = False
 
 # whether to ignore soft dependencies
 ignore_suggests = False
